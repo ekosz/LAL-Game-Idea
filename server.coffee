@@ -1,25 +1,29 @@
 http = require('http')
 io = require('socket.io')
 
+### Fuctions ###
+################
+nextState = () ->
+  # Go to database, pick random question, that hasn't asked in a while
+
+update = () ->
+  for choice in choices
+    for client in choice
+      client.send {otherClients: choice}
+  socket.broadcast {state: nextState()}
+  choices = {}
+
+
+### WEB SERVER ####
+###################
 server = http.createServer (req, res) ->
   res.writeHead 200, {'Content-Type': 'text/html'}
-  # res.end HTMLFile
+  # res.end File.read "public/index.html"
 
 server.listen(80)
 
-state = {
-  question: "Would you rather...",
-  awnsers: [
-    "Kiss",
-    "Hug",
-    "Cuddle",
-    "Sex"
-  ]
-}
-
-choices = {}
-nameHash = {}
-
+### WEB SOCKET SERVER ###
+#########################
 socket = io.listen(server)
 
 socket.on 'connection', (client) ->
@@ -36,15 +40,20 @@ socket.on 'connection', (client) ->
   client.on 'disconnect', () ->
     client.broadcast {message: nameHash[client]+" has left"}
 
-nextState = () ->
-  # Go to database, pick random question, that hasn't asked in a while
+### MAIN LOOP ###
+#################
+state = {
+  question: "Would you rather...",
+  awnsers: [
+    "Kiss",
+    "Hug",
+    "Cuddle",
+    "Sex"
+  ]
+}
 
-update = () ->
-  for choice in choices
-    for client in choice
-      client.send {otherClients: choice}
-  socket.broadcast {state: nextState()}
-  choices = {}
+choices = {}
+nameHash = {}
 
 setInterval update, 10000
 
