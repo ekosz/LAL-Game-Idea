@@ -1,0 +1,76 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+//@import "compass/reset";
+
+@import "html5-boilerplate";
+
+// Now, you can simply include everything
+// (except media) by uncommeting this line
+//@include html5-boilerplate;
+
+// Or, you can pick and choose only the sections
+// you want by using the these includes
+@include html5-boilerplate-reset;
+@include html5-boilerplate-fonts;
+@include html5-boilerplate-styles;
+@include html5-boilerplate-helpers;
+
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 2em;
+  background-color: #ccc;
+}
+h1 {
+  font-size: 120%;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+h2 {
+  font-weight: bold;
+}
+
+#wrapper {
+  width: 1000px;
+  margin: 20px auto;
+  background-color: white;
+  border-radius: 20px;
+  padding: 10px;
+}
+
+#question {
+  color: blue;
+  margin: 20px auto;
+  width: 535px;
+  text-align: center;
+}
+
+#awnsers {
+  -webkit-column-count: 2;
+  width: 535px;
+  .awnser {
+    width: 250px;
+    height: 175px;
+    text-align: center;
+    margin-bottom: 10px;
+    background-color: red;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+}
+
+#main {
+  float: left;
+}
+
+#side {
+  float: right;
+}
+
+#message {
+  clear: both;
+}
