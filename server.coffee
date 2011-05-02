@@ -7,7 +7,7 @@ nextState = () ->
 update = () ->
   console.log "Updating...."
   for choice of choices
-    for client in choice
+    for client in choices[choice]
       client.send {otherClients: choice}
   socket.broadcast {state: nextState()}
   choices = {}
@@ -79,15 +79,15 @@ socket.on 'connection', (client) ->
 state = {
   question: "Would you rather...",
   awnsers: [
-    "Kiss",
-    "Hug",
-    "Cuddle",
-    "Sex"
+    "One",
+    "Two",
+    "Three",
+    "Four"
   ]
 }
 
 choices = {}
 nameHash = {}
 
-setInterval update, 10000
+setInterval update, 25000
 
