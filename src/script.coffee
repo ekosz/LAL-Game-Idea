@@ -14,6 +14,9 @@ socket.on 'message', (obj) ->
   if 'message' in Object.keys obj
     $("#message").innerHTML obj.message
 
+  else if 'name' in Object.keys(obj)
+    $("#name").text obj.name
+
   else if 'state' in Object.keys(obj)
     choice = null #Reset the choice
 

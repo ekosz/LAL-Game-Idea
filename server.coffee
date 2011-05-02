@@ -30,7 +30,7 @@ update = () ->
   choices = {}
 
 findName = () ->
-  "Someone" # Add more later
+  (String.fromCharCode(Math.floor(Math.random()*25+65)) for i in [1..10]).join('')
 
 log = (statCode, url, ip, err) ->
   logStr = statCode + ' - ' + url + ' - ' + ip
@@ -83,6 +83,7 @@ socket = io.listen(server)
 socket.on 'connection', (client) ->
   # New Client
   nameHash[client] = findName() # Assign name to client
+  client.send {name: nameHash[client]}
 
   client.send {state: nextState()}
   client.broadcast {message: nameHash[client]+" has joined"}

@@ -22,6 +22,8 @@
     var client, li, _i, _len, _ref, _results;
     if (__indexOf.call(Object.keys(obj), 'message') >= 0) {
       return $("#message").innerHTML(obj.message);
+    } else if (__indexOf.call(Object.keys(obj), 'name') >= 0) {
+      return $("#name").text(obj.name);
     } else if (__indexOf.call(Object.keys(obj), 'state') >= 0) {
       choice = null;
       $("#timer").fadeOut(function() {
