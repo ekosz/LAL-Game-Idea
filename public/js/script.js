@@ -1,15 +1,18 @@
 (function() {
-  var choice, socket;
+  var choice, socket, tick;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
     }
     return -1;
   };
+  tick = function() {
+    $("#timer").text(parseInt($("#timer").text()) - 1);
+    return setTimeout(tick, 1000);
+  };
   choice = null;
   socket = new io.Socket(null, {
-    port: 8080,
-    rememberTransport: false
+    port: 9393
   });
   socket.connect();
   socket.on('connect', function() {
@@ -18,12 +21,14 @@
   socket.on('message', function(obj) {
     var client, li, _i, _len, _ref, _results;
     if (__indexOf.call(Object.keys(obj), 'message') >= 0) {
-      console.log("Message recived: " + obj.message);
       return $("#message").innerHTML(obj.message);
     } else if (__indexOf.call(Object.keys(obj), 'state') >= 0) {
-      console.log('State recived');
       choice = null;
-      $("#otherClients ul").empty();
+      $("#timer").fadeOut(function() {
+        $("#timer").text(obj.state.timeLeft);
+        return $("#timer").fadeIn();
+      });
+      $("#otherClients").empty();
       $("#question").fadeOut(function() {
         $("#question").text(obj.state.question);
         return $("#question").fadeIn();
@@ -45,11 +50,11 @@
                 choice: $(this).text()
               });
             } else {
-              return $(choice).animate({
-                backgroundColor: "#FF0000"
-              }, 500).animate({
-                backgroundColor: "#0000FF"
-              }, 1000);
+              return $(choice).stop().animate({
+                backgroundColor: "red"
+              }, 250).animate({
+                backgroundColor: "blue"
+              }, 750);
             }
           });
           $("#awnsers").append(div);
@@ -57,14 +62,13 @@
         return $("#awnsers").fadeIn();
       });
     } else if (__indexOf.call(Object.keys(obj), 'otherClients') >= 0) {
-      console.log("otherClients recived! " + obj);
       _ref = obj.otherClients;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         client = _ref[_i];
         li = document.createElement('li');
         li.innerHTML = client;
-        _results.push($('#otherClients ul').append(li));
+        _results.push($('ul').append(li));
       }
       return _results;
     }
@@ -72,4 +76,5 @@
   socket.on('disconnect', function() {
     return $("#message").append("<br />Disconnected!");
   });
+  tick();
 }).call(this);

@@ -1,15 +1,32 @@
+sys = require('sys')
+
+TIME = 25
+timer = TIME
+choices = {}
+nameHash = {}
+
 ### Fuctions ###
 ################
 nextState = () ->
   # Go to database, pick random question, that hasn't asked in a while
-  state
+  {
+    question: "Would you rather...",
+    awnsers: [
+      "One",
+      "Two",
+      "Three",
+      "Four"
+    ],
+    timeLeft: timer
+  }
 
 update = () ->
   console.log "Updating...."
-  for choice of choices
-    for client in choices[choice]
-      client.send {otherClients: choice}
+  timer = TIME
   socket.broadcast {state: nextState()}
+  for choice, clients of choices
+    for client in clients
+      client.send { otherClients: nameHash[c] for c in clients }
   choices = {}
 
 findName = () ->
@@ -21,13 +38,16 @@ log = (statCode, url, ip, err) ->
     logStr += ' - ' + err
   console.log(logStr)
 
+tick = () ->
+  timer = timer - 1
+
 ### WEB SERVER ####
 ###################
 path = require('path')
 http = require('http')
 paperboy = require('paperboy')
 
-PORT = 8080
+PORT = 9393
 WEBROOT = path.join(path.dirname(__filename), 'public')
 
 server = http.createServer (req, res) ->
@@ -64,11 +84,12 @@ socket.on 'connection', (client) ->
   # New Client
   nameHash[client] = findName() # Assign name to client
 
-  client.send {state: state}
+  client.send {state: nextState()}
   client.broadcast {message: nameHash[client]+" has joined"}
 
   client.on 'message', (data) ->
-    if 'choice' in data
+    if 'choice' in Object.keys data
+      choices[data.choice] or= []
       choices[data.choice].push client
 
   client.on 'disconnect', () ->
@@ -76,18 +97,8 @@ socket.on 'connection', (client) ->
 
 ### MAIN LOOP ###
 #################
-state = {
-  question: "Would you rather...",
-  awnsers: [
-    "One",
-    "Two",
-    "Three",
-    "Four"
-  ]
-}
 
-choices = {}
-nameHash = {}
 
-setInterval update, 25000
+setInterval update, TIME*1000
+setInterval tick, 1000
 

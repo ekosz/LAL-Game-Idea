@@ -1,5 +1,9 @@
+tick = () ->
+  $("#timer").text parseInt($("#timer").text())-1
+  setTimeout tick, 1000
+
 choice = null
-socket = new io.Socket(null, {port: 8080, rememberTransport: false})
+socket = new io.Socket(null, {port: 9393})
 socket.connect()
 
 socket.on 'connect', () ->
@@ -8,15 +12,17 @@ socket.on 'connect', () ->
 socket.on 'message', (obj) ->
   # Change the #message to new message
   if 'message' in Object.keys obj
-    console.log "Message recived: "+obj.message
     $("#message").innerHTML obj.message
 
   else if 'state' in Object.keys(obj)
-    console.log 'State recived'
+    choice = null #Reset the choice
 
-    choice = null
+    $("#timer").fadeOut () ->
+      $("#timer").text obj.state.timeLeft
+      $("#timer").fadeIn()
 
-    $("#otherClients ul").empty() # Clear list of agreeing users
+
+    $("#otherClients").empty() # Clear list of agreeing users
 
     $("#question").fadeOut () ->
       $("#question").text obj.state.question # Change #question to new question
@@ -33,20 +39,20 @@ socket.on 'message', (obj) ->
           unless choice
             choice = this
             $(this).css 'background-color', 'blue'
-            socket.send {choice: $(this).text()}
+            socket.send {choice: $(this).text()} # Send the choice to the server
           else
-            $(choice).animate({backgroundColor:"#FF0000"}, 500).animate({backgroundColor:"#0000FF"}, 1000)
+            $(choice).stop().animate({backgroundColor:"red"}, 250).animate({backgroundColor:"blue"}, 750) # if there is a choice already
 
         $("#awnsers").append div # Add new awnsers
       $("#awnsers").fadeIn()
 
   else if 'otherClients' in Object.keys obj
-    console.log "otherClients recived! " + obj
     for client in obj.otherClients
       li = document.createElement('li')
       li.innerHTML = client 
-      $('#otherClients ul').append li # Add agreeing users
+      $('ul').append li # Add agreeing users
 
 socket.on 'disconnect', () ->
   $("#message").append("<br />Disconnected!")
 
+tick()
