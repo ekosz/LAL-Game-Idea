@@ -2,7 +2,8 @@
 #################
 
 tick = () ->
-  $("#timer").text parseInt($("#timer").text())-1 unless parseInt($("#timer").text) == 0
+  timeLeft = parseInt $("#timer").text()
+  $("#timer").text(timeLeft - 1) unless timeLeft <= 0
   setTimeout tick, 1000
 
 createMessage = (message) ->

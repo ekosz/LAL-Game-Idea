@@ -7,8 +7,10 @@
     return -1;
   };
   tick = function() {
-    if (parseInt($("#timer").text) !== 0) {
-      $("#timer").text(parseInt($("#timer").text()) - 1);
+    var timeLeft;
+    timeLeft = parseInt($("#timer").text());
+    if (!(timeLeft <= 0)) {
+      $("#timer").text(timeLeft - 1);
     }
     return setTimeout(tick, 1000);
   };
