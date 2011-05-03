@@ -26,7 +26,7 @@ update = () ->
   socket.broadcast {state: nextState()}
   for choice, clients of choices
     for client in clients
-      client.send { otherClients: nameHash[c] for c in clients }
+      client.send { otherClients: nameHash[c] for c in clients when c != client }
   choices = {}
 
 findName = () ->
