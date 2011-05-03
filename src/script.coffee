@@ -1,18 +1,32 @@
+### FUNCTIONS ###
+#################
+
 tick = () ->
-  $("#timer").text parseInt($("#timer").text())-1
+  $("#timer").text parseInt($("#timer").text())-1 unless parseInt($("#timer").text) == 0
   setTimeout tick, 1000
 
+createMessage = (message) ->
+  p = document.createElement('p')
+  p.innerHTML = message
+  p.className = 'message'
+  p.id = Math.floor(Math.random()*1000)
+  $("#message").append p
+  setTimeout "$('#"+p.id+"').fadeOut(function() { $('#"+p.id+"').remove();});", 5000
+
 choice = null
+
+### WEB SOCKET ###
+##################
+
 socket = new io.Socket(null, {port: 9393})
 socket.connect()
 
 socket.on 'connect', () ->
-  $("#message").append("<br />Connected!!")
+  createMessage('Connected!')
 
 socket.on 'message', (obj) ->
-  # Change the #message to new message
   if 'message' in Object.keys obj
-    $("#message").innerHTML obj.message
+    createMessage(obj.message) # Add message
 
   else if 'name' in Object.keys(obj)
     $("#name").text obj.name
@@ -21,7 +35,7 @@ socket.on 'message', (obj) ->
     choice = null #Reset the choice
 
     $("#timer").fadeOut () ->
-      $("#timer").text obj.state.timeLeft
+      $("#timer").text obj.state.timeLeft # Update Timeleft
       $("#timer").fadeIn()
 
 
@@ -56,6 +70,9 @@ socket.on 'message', (obj) ->
       $('ul').append li # Add agreeing users
 
 socket.on 'disconnect', () ->
-  $("#message").append("<br />Disconnected!")
+  createMessage("Disconnected!")
+
+### MAIN LOOP ####
+##################
 
 tick()

@@ -1,5 +1,5 @@
 (function() {
-  var choice, socket, tick;
+  /* FUNCTIONS */  var choice, createMessage, socket, tick;
   var __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
@@ -7,21 +7,33 @@
     return -1;
   };
   tick = function() {
-    $("#timer").text(parseInt($("#timer").text()) - 1);
+    if (parseInt($("#timer").text) !== 0) {
+      $("#timer").text(parseInt($("#timer").text()) - 1);
+    }
     return setTimeout(tick, 1000);
   };
+  createMessage = function(message) {
+    var p;
+    p = document.createElement('p');
+    p.innerHTML = message;
+    p.className = 'message';
+    p.id = Math.floor(Math.random() * 1000);
+    $("#message").append(p);
+    return setTimeout("$('#" + p.id + "').fadeOut(function() { $('#" + p.id + "').remove();});", 5000);
+  };
   choice = null;
+  /* WEB SOCKET */
   socket = new io.Socket(null, {
     port: 9393
   });
   socket.connect();
   socket.on('connect', function() {
-    return $("#message").append("<br />Connected!!");
+    return createMessage('Connected!');
   });
   socket.on('message', function(obj) {
     var client, li, _i, _len, _ref, _results;
     if (__indexOf.call(Object.keys(obj), 'message') >= 0) {
-      return $("#message").innerHTML(obj.message);
+      return createMessage(obj.message);
     } else if (__indexOf.call(Object.keys(obj), 'name') >= 0) {
       return $("#name").text(obj.name);
     } else if (__indexOf.call(Object.keys(obj), 'state') >= 0) {
@@ -76,7 +88,8 @@
     }
   });
   socket.on('disconnect', function() {
-    return $("#message").append("<br />Disconnected!");
+    return createMessage("Disconnected!");
   });
+  /* MAIN LOOP */
   tick();
 }).call(this);
